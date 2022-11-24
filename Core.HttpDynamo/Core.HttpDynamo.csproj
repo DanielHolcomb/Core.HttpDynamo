@@ -12,4 +12,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
   </ItemGroup>
 
+	<PropertyGroup>
+		<VersionPrefix>1.1.0</VersionPrefix>
+	</PropertyGroup>
+
 </Project>

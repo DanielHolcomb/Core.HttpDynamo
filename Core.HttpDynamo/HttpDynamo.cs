@@ -14,12 +14,19 @@ namespace Core.HttpDynamo
 
         public async static Task<T?> GetRequestAsync<T>(IHttpClientFactory _httpClientFactory, string url)
         {
-            var result = await GetRequestAsync<T>(_httpClientFactory, url, null);
+            var result = await GetRequestAsync<T>(_httpClientFactory, url, null, null);
 
             return result;
         }
 
-        public async static Task<T?> GetRequestAsync<T>(IHttpClientFactory _httpClientFactory, string url, string? bearerToken)
+        public async static Task<T?> GetRequestAsync<T>(IHttpClientFactory _httpClientFactory, string url, Dictionary<string, string>? headers)
+        {
+            var result = await GetRequestAsync<T>(_httpClientFactory, url, null, headers);
+
+            return result;
+        }
+
+        public async static Task<T?> GetRequestAsync<T>(IHttpClientFactory _httpClientFactory, string url, string? bearerToken, Dictionary<string, string>? headers)
         {
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
 
@@ -27,6 +34,10 @@ namespace Core.HttpDynamo
 
             if (bearerToken != null)
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+
+            if(headers != null)
+                foreach(var header in headers)
+                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
 
             var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
 
@@ -40,16 +51,22 @@ namespace Core.HttpDynamo
 
             return result;
         }
-        
 
         public async static Task<Stream?> GetRequestAsync(IHttpClientFactory _httpClientFactory, string url)
         {
-            var result = await GetRequestAsync(_httpClientFactory, url, null);
+            var result = await GetRequestAsync(_httpClientFactory, url, null, null);
 
             return result;
         }
 
-        public async static Task<Stream?> GetRequestAsync(IHttpClientFactory _httpClientFactory, string url, string? bearerToken)
+        public async static Task<Stream?> GetRequestAsync(IHttpClientFactory _httpClientFactory, string url, Dictionary<string, string>? headers)
+        {
+            var result = await GetRequestAsync(_httpClientFactory, url, null, headers);
+
+            return result;
+        }
+
+        public async static Task<Stream?> GetRequestAsync(IHttpClientFactory _httpClientFactory, string url, string? bearerToken, Dictionary<string, string>? headers)
         {
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
 
@@ -57,6 +74,10 @@ namespace Core.HttpDynamo
 
             if (bearerToken != null)
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+
+            if (headers != null)
+                foreach (var header in headers)
+                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
 
             var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
 

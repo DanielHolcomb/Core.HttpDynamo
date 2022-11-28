@@ -1,5 +1,6 @@
 using Core.HttpDynamo;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 
 namespace SampleHttpDynamoApp.Controllers
 {
@@ -18,7 +19,9 @@ namespace SampleHttpDynamoApp.Controllers
         [Route("GetFromThis")]
         public async Task<IActionResult> GetFromThis()
         {
-            var getThis = await HttpDynamo.GetRequestAsync(_httpClientFactory, "https://localhost:7144/Sample/GetThis");
+            var headers = new Dictionary<string, string>();
+            headers["Accept"] = "application/json";
+            var getThis = await HttpDynamo.GetRequestAsync(_httpClientFactory, "https://localhost:7144/Sample/GetThis", headers);
 
             return Ok(getThis);
         }

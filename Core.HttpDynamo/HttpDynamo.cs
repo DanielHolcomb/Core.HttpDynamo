@@ -91,12 +91,19 @@ namespace Core.HttpDynamo
 
         public async static Task<T?> PostRequestAsync<T>(IHttpClientFactory _httpClientFactory, string url, object payload)
         {
-            var result = await PostRequestAsync<T>(_httpClientFactory, url, null, payload);
+            var result = await PostRequestAsync<T>(_httpClientFactory, url, null, payload, null);
 
             return result;
         }
 
-        public async static Task<T?> PostRequestAsync<T>(IHttpClientFactory _httpClientFactory, string url, string? bearerToken, object payload)
+        public async static Task<T?> PostRequestAsync<T>(IHttpClientFactory _httpClientFactory, string url, object payload, Dictionary<string, string>? headers)
+        {
+            var result = await PostRequestAsync<T>(_httpClientFactory, url, null, payload, headers);
+
+            return result;
+        }
+
+        public async static Task<T?> PostRequestAsync<T>(IHttpClientFactory _httpClientFactory, string url, string? bearerToken, object payload, Dictionary<string, string>? headers)
         {
             var json = JsonSerializer.Serialize(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -104,6 +111,10 @@ namespace Core.HttpDynamo
 
             if (bearerToken != null)
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+
+            if (headers != null)
+                foreach (var header in headers)
+                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
 
             var httpResponseMessage = await httpClient.PostAsync(url, content);
 
@@ -121,12 +132,19 @@ namespace Core.HttpDynamo
 
         public async static Task<Stream?> PostRequestAsync(IHttpClientFactory _httpClientFactory, string url, object payload)
         {
-            var result = await PostRequestAsync(_httpClientFactory, url, null, payload);
+            var result = await PostRequestAsync(_httpClientFactory, url, null, payload, null);
 
             return result;
         }
 
-        public async static Task<Stream?> PostRequestAsync(IHttpClientFactory _httpClientFactory, string url, string? bearerToken, object payload)
+        public async static Task<Stream?> PostRequestAsync(IHttpClientFactory _httpClientFactory, string url, object payload, Dictionary<string, string>? headers)
+        {
+            var result = await PostRequestAsync(_httpClientFactory, url, null, payload, headers);
+
+            return result;
+        }
+
+        public async static Task<Stream?> PostRequestAsync(IHttpClientFactory _httpClientFactory, string url, string? bearerToken, object payload, Dictionary<string, string>? headers)
         {
             var json = JsonSerializer.Serialize(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -134,6 +152,10 @@ namespace Core.HttpDynamo
 
             if (bearerToken != null)
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+
+            if (headers != null)
+                foreach (var header in headers)
+                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
 
             var httpResponseMessage = await httpClient.PostAsync(url, content);
 

@@ -28,28 +28,36 @@ namespace Core.HttpDynamo
 
         public async static Task<T?> GetRequestAsync<T>(IHttpClientFactory _httpClientFactory, string url, string? bearerToken, Dictionary<string, string>? headers)
         {
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-
-            var httpClient = _httpClientFactory.CreateClient();
-
-            if (bearerToken != null)
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-
-            if(headers != null)
-                foreach(var header in headers)
-                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
-
-            var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
-
-            var result = default(T);
-
-            if (httpResponseMessage.IsSuccessStatusCode)
+            try
             {
-                var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
-                result = await JsonSerializer.DeserializeAsync<T>(contentStream);
+                var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+
+                var httpClient = _httpClientFactory.CreateClient();
+
+                if (bearerToken != null)
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+
+                if (headers != null)
+                    foreach (var header in headers)
+                        httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+
+                var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+
+                var result = default(T);
+
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+                    result = await JsonSerializer.DeserializeAsync<T>(contentStream);
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new HttpDynamoException(ex.Message);
             }
 
-            return result;
         }
 
         public async static Task<Stream?> GetRequestAsync(IHttpClientFactory _httpClientFactory, string url)
@@ -68,25 +76,33 @@ namespace Core.HttpDynamo
 
         public async static Task<Stream?> GetRequestAsync(IHttpClientFactory _httpClientFactory, string url, string? bearerToken, Dictionary<string, string>? headers)
         {
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-
-            var httpClient = _httpClientFactory.CreateClient();
-
-            if (bearerToken != null)
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-
-            if (headers != null)
-                foreach (var header in headers)
-                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
-
-            var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
-
-            if (httpResponseMessage.IsSuccessStatusCode)
+            try
             {
-                return await httpResponseMessage.Content.ReadAsStreamAsync();
+                var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+
+                var httpClient = _httpClientFactory.CreateClient();
+
+                if (bearerToken != null)
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+
+                if (headers != null)
+                    foreach (var header in headers)
+                        httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+
+                var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    return await httpResponseMessage.Content.ReadAsStreamAsync();
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new HttpDynamoException(ex.Message);
             }
 
-            return null;
         }
 
         public async static Task<T?> PostRequestAsync<T>(IHttpClientFactory _httpClientFactory, string url, object payload)
@@ -105,29 +121,36 @@ namespace Core.HttpDynamo
 
         public async static Task<T?> PostRequestAsync<T>(IHttpClientFactory _httpClientFactory, string url, string? bearerToken, object payload, Dictionary<string, string>? headers)
         {
-            var json = JsonSerializer.Serialize(payload);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var httpClient = _httpClientFactory.CreateClient();
-
-            if (bearerToken != null)
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-
-            if (headers != null)
-                foreach (var header in headers)
-                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
-
-            var httpResponseMessage = await httpClient.PostAsync(url, content);
-
-            var result = default(T);
-
-            if (httpResponseMessage.IsSuccessStatusCode)
+            try
             {
-                var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+                var json = JsonSerializer.Serialize(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var httpClient = _httpClientFactory.CreateClient();
 
-                result = await JsonSerializer.DeserializeAsync<T>(contentStream);
+                if (bearerToken != null)
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+
+                if (headers != null)
+                    foreach (var header in headers)
+                        httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+
+                var httpResponseMessage = await httpClient.PostAsync(url, content);
+
+                var result = default(T);
+
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+
+                    result = await JsonSerializer.DeserializeAsync<T>(contentStream);
+                }
+
+                return result;
             }
-
-            return result;
+            catch (Exception ex)
+            {
+                throw new HttpDynamoException(ex.Message);
+            }
         }
 
         public async static Task<Stream?> PostRequestAsync(IHttpClientFactory _httpClientFactory, string url, object payload)
@@ -146,25 +169,32 @@ namespace Core.HttpDynamo
 
         public async static Task<Stream?> PostRequestAsync(IHttpClientFactory _httpClientFactory, string url, string? bearerToken, object payload, Dictionary<string, string>? headers)
         {
-            var json = JsonSerializer.Serialize(payload);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var httpClient = _httpClientFactory.CreateClient();
-
-            if (bearerToken != null)
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-
-            if (headers != null)
-                foreach (var header in headers)
-                    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
-
-            var httpResponseMessage = await httpClient.PostAsync(url, content);
-
-            if (httpResponseMessage.IsSuccessStatusCode)
+            try
             {
-                return await httpResponseMessage.Content.ReadAsStreamAsync();
-            }
+                var json = JsonSerializer.Serialize(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var httpClient = _httpClientFactory.CreateClient();
 
-            return null;
+                if (bearerToken != null)
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+
+                if (headers != null)
+                    foreach (var header in headers)
+                        httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+
+                var httpResponseMessage = await httpClient.PostAsync(url, content);
+
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    return await httpResponseMessage.Content.ReadAsStreamAsync();
+                }
+
+                return null;
+            }
+            catch(Exception ex)
+            {
+                throw new HttpDynamoException(ex.Message);
+            }
         }
     }
 }
